@@ -1,10 +1,29 @@
 const std = @import("std");
-const testing = std.testing;
+const gpio = @import("gpio.zig");
 
-export fn add(a: i32, b: i32) i32 {
-    return a + b;
-}
+pub fn main() void {
+    // Onboard LED
+    gpio.pinMode(13, .out);
+    // Wired LED
+    gpio.pinMode(8, .out);
+    // Button
+    gpio.pinMode(3, .in);
 
-test "basic add functionality" {
-    try testing.expect(add(3, 7) == 10);
+    var on = false;
+    while (true) {
+        gpio.toggle(13);
+        if (gpio.digitalRead(3) == .low) {
+            gpio.digitalWrite(8, .low);
+        } else {
+            gpio.digitalWrite(8, .high);
+        }
+        on = !on;
+
+        // Hard code a busy wait. Will add delays eventually.
+        var i: u32 = 0;
+        while (i < 100000) : (i += 1) {
+            // For some reason need to nop the busy wait
+            asm volatile ("nop");
+        }
+    }
 }
