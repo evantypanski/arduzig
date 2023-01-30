@@ -23,7 +23,7 @@ pub fn build(b: *std.build.Builder) !void {
     exe.setBuildMode(.ReleaseSmall);
     exe.install();
 
-    const port = b.option([]const u8, "port", "Port Arduino is connected to (default: /dev/ttyACM0") orelse "/dev/ttyACM0";
+    const port = b.option([]const u8, "port", "Port Arduino is connected to (default: /dev/ttyACM0)") orelse "/dev/ttyACM0";
 
     const bin_path = b.getInstallPath(exe.inner.install_step.?.dest_dir, exe.inner.out_filename);
 

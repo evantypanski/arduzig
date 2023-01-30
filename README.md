@@ -13,5 +13,7 @@ zig build
 ## Uploading to an Arduino Uno
 
 ```
-zig build upload /dev/ttyACM0
+zig build upload -Dport=/dev/ttyACM0
 ```
+
+You may need to be root or change permissions to access the device. Note that `/dev/ttyACM0` is the default.
