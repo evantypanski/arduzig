@@ -1,9 +1,10 @@
 const std = @import("std");
 const gpio = @import("gpio.zig");
+const pins = @import("pins.zig");
 
 pub fn main() void {
     // Onboard LED
-    gpio.pinMode(13, .out);
+    gpio.pinMode(pins.led_builtin, .out);
     // Wired LED
     gpio.pinMode(8, .out);
     // Button
@@ -11,7 +12,7 @@ pub fn main() void {
 
     var on = false;
     while (true) {
-        gpio.toggle(13);
+        gpio.toggle(pins.led_builtin);
         if (gpio.digitalRead(3) == .low) {
             gpio.digitalWrite(8, .low);
         } else {
