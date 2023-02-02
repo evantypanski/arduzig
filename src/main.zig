@@ -1,8 +1,14 @@
 const std = @import("std");
 const gpio = @import("gpio.zig");
 const pins = @import("pins.zig");
+const serial = @import("serial.zig");
 
 pub fn main() void {
+    // This baud should match what you pass in build
+    serial.begin(115200);
+    _ = serial.println("hi");
+    _ = serial.print("yo");
+    _ = serial.println("sup");
     // Onboard LED
     gpio.pinMode(pins.led_builtin, .out);
     // Wired LED

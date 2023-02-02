@@ -1,6 +1,7 @@
 const regs = @import("microzig").chip.registers;
 
 // Very uno specific
+// TODO: Use board.pin_map
 const DigitalPort = enum {
     D,
     B,

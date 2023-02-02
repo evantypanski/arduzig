@@ -36,4 +36,17 @@ pub fn build(b: *std.build.Builder) !void {
 
     const upload_step = b.step("upload", "Upload binary to Arduino");
     upload_step.dependOn(&upload_command.step);
+
+    const monitor = b.step("serial", "Serial output monitor");
+
+    const baud = b.option([]const u8, "baud", "Baud rate for the serial monitor") orelse "115200";
+
+    const screen = b.addSystemCommand(&.{
+        "screen",
+        port,
+        baud,
+    });
+
+    // You don't have to upload in order to attach the serial monitor
+    monitor.dependOn(&screen.step);
 }
