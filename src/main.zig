@@ -9,6 +9,9 @@ pub fn main() void {
     _ = serial.println("hi");
     _ = serial.print("yo");
     _ = serial.println("sup");
+    // TODO: Why can't you have both 10 and 16????
+    _ = serial.printNum(123, 10);
+    //_ = serial.printNum(123, 16);
     // Onboard LED
     gpio.pinMode(pins.led_builtin, .out);
     // Wired LED
