@@ -1,17 +1,9 @@
 const std = @import("std");
 const gpio = @import("gpio.zig");
 const pins = @import("pins.zig");
-const serial = @import("serial.zig");
 
 pub fn main() void {
     // This baud should match what you pass in build
-    serial.begin(115200);
-    _ = serial.println("hi");
-    _ = serial.print("yo");
-    _ = serial.println("sup");
-    // TODO: Why can't you have both 10 and 16????
-    _ = serial.printNum(123, 10);
-    //_ = serial.printNum(123, 16);
     // Onboard LED
     gpio.pinMode(pins.led_builtin, .out);
     // Wired LED
@@ -19,7 +11,6 @@ pub fn main() void {
     // Button
     gpio.pinMode(3, .in);
 
-    var on = false;
     while (true) {
         gpio.toggle(pins.led_builtin);
         if (gpio.digitalRead(3) == .low) {
@@ -27,7 +18,6 @@ pub fn main() void {
         } else {
             gpio.digitalWrite(8, .high);
         }
-        on = !on;
 
         // Hard code a busy wait. Will add delays eventually.
         var i: u32 = 0;
