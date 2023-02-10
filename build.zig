@@ -16,11 +16,9 @@ pub fn build(b: *std.build.Builder) !void {
         "src/main.zig",
         backing,
         .{
-            // optional slice of packages that can be imported into your app:
-            // .packages = &my_packages,
+            .optimize = .ReleaseSmall,
         },
     );
-    exe.setBuildMode(.ReleaseSmall);
     exe.install();
 
     const port = b.option([]const u8, "port", "Port Arduino is connected to (default: /dev/ttyACM0)") orelse "/dev/ttyACM0";
