@@ -12,7 +12,7 @@ pub fn build(b: *std.build.Builder) !void {
 
     var exe = microzig.addEmbeddedExecutable(
         b,
-        "zigduino",
+        "arduzig",
         "src/main.zig",
         backing,
         .{

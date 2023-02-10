@@ -1,4 +1,4 @@
-# Zigduino
+# Arduzig
 
 An attempt to get Arduino's simple [standard library](https://www.arduino.cc/reference/en/) in Zig. This will make it easier for first time users to make Arduino projects with Zig.
 
