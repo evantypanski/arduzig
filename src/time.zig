@@ -46,6 +46,15 @@ pub fn micros() u64 {
     return ((m << 8) + t) * (64 / clock_cycles_per_microsecond);
 }
 
+pub fn millis() u64 {
+    const oldSREG = regs.CPU.SREG.*;
+    micro.cpu.cli();
+
+    var m = timer0_millis;
+
+    regs.CPU.SREG.* = oldSREG;
+    return m;
+}
 pub fn delay(ms: u64) void {
     // Please tell me why in the world I need this 32 here
     var var_ms = comptime ms * 32;
