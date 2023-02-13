@@ -1,29 +1,34 @@
-const std = @import("std");
 const gpio = @import("gpio.zig");
 const pins = @import("pins.zig");
+const time = @import("time.zig");
 
 pub fn main() void {
-    // This baud should match what you pass in build
+    time.init();
     // Onboard LED
     gpio.pinMode(pins.led_builtin, .out);
-    // Wired LED
-    gpio.pinMode(8, .out);
-    // Button
-    gpio.pinMode(3, .in);
-
     while (true) {
         gpio.toggle(pins.led_builtin);
-        if (gpio.digitalRead(3) == .low) {
-            gpio.digitalWrite(8, .low);
-        } else {
-            gpio.digitalWrite(8, .high);
-        }
-
-        // Hard code a busy wait. Will add delays eventually.
-        var i: u32 = 0;
-        while (i < 100000) : (i += 1) {
-            // For some reason need to nop the busy wait
-            asm volatile ("nop");
-        }
+        time.delay(1000);
     }
 }
+
+// Interrupt stuff in root for timer
+pub const interrupts = struct {
+    pub fn TIMER0_OVF() void {
+        // Dunno if we need locals like in Arduino standard library to keep in
+        // registers. But I'll do it anyway
+        var m = time.timer0_millis;
+        var f = time.timer0_fract;
+
+        m += time.millis_inc;
+        f += time.fract_inc;
+        if (f >= time.fract_max) {
+            f -= time.fract_max;
+            m += 1;
+        }
+
+        time.timer0_fract = f;
+        time.timer0_millis = m;
+        time.timer0_overflow_count += 1;
+    }
+};
