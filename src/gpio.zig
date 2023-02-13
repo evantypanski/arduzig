@@ -78,3 +78,18 @@ pub fn toggle(comptime pin: u8) void {
     val ^= port.bitMask(pin);
     port.dataReg().* = val;
 }
+
+pub fn analogRead(comptime pin: u8) u16 {
+    // If we're reading then need to enable ADC
+    regs.CPU.PRR.modify(.{ .PRADC = 0 });
+    // ADPS set based on prescaling, 16MHz = 0x3
+    regs.ADC.ADCSRA.modify(.{ .ADPS = 3, .ADEN = 1 });
+    // Choose the pin and mode. In future REFS will possibly be set by user
+    regs.ADC.ADMUX.modify(.{ .MUX = pin, .REFS = 1 });
+    // Start conversation
+    regs.ADC.ADCSRA.modify(.{ .ADSC = 1 });
+    while (regs.ADC.ADCSRA.read().ADSC == 1) {}
+
+    // Conversation done, ADC has the read value.
+    return regs.ADC.ADC.*;
+}
