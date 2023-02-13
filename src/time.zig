@@ -32,6 +32,12 @@ pub fn init() void {
     // Set clock mode
     regs.TC0.TCCR0B.modify(.{ .CS0 = 0x1 });
     regs.TC0.TCCR0A.modify(.{ .WGM0 = 0x1 });
+
+    // PWM timer stuff
+    regs.TC1.TCCR1B.modify(.{ .CS1 = 0x4 });
+    regs.TC1.TCCR1A.modify(.{ .WGM1 = 0x1 });
+    regs.TC2.TCCR2B.modify(.{ .CS2 = 0x4 });
+    regs.TC2.TCCR2A.modify(.{ .WGM2 = 0x1 });
 }
 
 pub fn micros() u64 {

@@ -93,3 +93,55 @@ pub fn analogRead(comptime pin: u8) u16 {
     // Conversation done, ADC has the read value.
     return regs.ADC.ADC.*;
 }
+
+pub fn analogWrite(comptime pin: u8, comptime val: u8) void {
+    pinMode(pin, .out);
+    // Special cases at extremes
+    if (val == 0) {
+        digitalWrite(pin, .low);
+    } else if (val == 255) {
+        digitalWrite(pin, .high);
+    } else {
+        // Else we set the duty cycle
+        // Hard code this for now, may want to change based on chip
+        switch (pin) {
+            3 => {
+                // TIMER2B
+                regs.TC2.TCCR2A.modify(.{ .COM2B = 2 });
+                regs.TC2.OCR2B.* = val;
+            },
+            5 => {
+                // TIMER0B
+                regs.TC0.TCCR0A.modify(.{ .COM0B = 2 });
+                regs.TC0.OCR0B.* = val;
+            },
+            6 => {
+                // TIMER0A
+                regs.TC0.TCCR0A.modify(.{ .COM0A = 2 });
+                regs.TC0.OCR0A.* = val;
+            },
+            9 => {
+                // TIMER1A
+                regs.TC1.TCCR1A.modify(.{ .COM1A = 2 });
+                regs.TC1.OCR1A.* = val;
+            },
+            10 => {
+                // TIMER1B
+                regs.TC1.TCCR1A.modify(.{ .COM1B = 2 });
+                regs.TC1.OCR1B.* = val;
+            },
+            11 => {
+                // TIMER2A
+                regs.TC2.TCCR2A.modify(.{ .COM2A = 2 });
+                regs.TC2.OCR2A.* = val;
+            },
+            else => {
+                if (val < 128) {
+                    digitalWrite(pin, .low);
+                } else {
+                    digitalWrite(pin, .high);
+                }
+            },
+        }
+    }
+}

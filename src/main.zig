@@ -5,11 +5,12 @@ const time = @import("time.zig");
 pub fn main() void {
     time.init();
     // Onboard LED
-    gpio.pinMode(pins.led_builtin, .out);
+    gpio.pinMode(10, .out);
     while (true) {
-        const sensor_val = gpio.analogRead(0);
-        gpio.toggle(pins.led_builtin);
-        time.delay(sensor_val);
+        gpio.analogWrite(10, 100);
+        time.delay(1000);
+        gpio.analogWrite(10, 200);
+        time.delay(1000);
     }
 }
 
