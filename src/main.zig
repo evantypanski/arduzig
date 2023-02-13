@@ -7,7 +7,7 @@ pub fn main() void {
     // Onboard LED
     gpio.pinMode(pins.led_builtin, .out);
     while (true) {
-        const sensor_val = gpio.analog_read(0);
+        const sensor_val = gpio.analogRead(0);
         gpio.toggle(pins.led_builtin);
         time.delay(sensor_val);
     }
