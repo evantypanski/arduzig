@@ -34,7 +34,7 @@ pub fn init() void {
     regs.TC0.TCCR0A.modify(.{ .WGM0 = 0x1 });
 }
 
-fn micros() u64 {
+pub fn micros() u64 {
     const oldSREG = regs.CPU.SREG.*;
     micro.cpu.cli();
     var m = timer0_overflow_count;
