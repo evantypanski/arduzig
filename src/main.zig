@@ -1,8 +1,18 @@
 const gpio = @import("gpio.zig");
 const pins = @import("pins.zig");
 const time = @import("time.zig");
+const Serial = @import("Serial.zig");
 
-pub fn main() void {
+const std = @import("std");
+
+pub fn main() !void {
+    try Serial.begin(115200);
+    try Serial.write("Hi there");
+    const read = try Serial.readString();
+    var buf = [_]u8{0} ** 10;
+    _ = std.fmt.formatIntBuf(&buf, @intCast(u32, read[0]), 10, .upper, .{});
+    try Serial.write(&buf);
+
     time.init();
     // Onboard LED
     gpio.pinMode(10, .out);
