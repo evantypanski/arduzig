@@ -56,10 +56,15 @@ pub fn pinMode(comptime pin: u8, comptime dir: enum { in, out }) void {
     }
 }
 
-pub fn digitalWrite(comptime pin: u8, comptime val: enum { high, low }) void {
+pub const DigitalVal = enum(u1) {
+    low = 1,
+    high = 0,
+};
+
+pub fn digitalWrite(comptime pin: u8, val: DigitalVal) void {
     const port = comptime portForPin(pin);
     var data_reg = port.dataReg().*;
-    if (val == .high) {
+    if (val == .low) {
         data_reg &= ~port.bitMask(pin);
     } else {
         data_reg |= port.bitMask(pin);
