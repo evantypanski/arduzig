@@ -2,24 +2,23 @@ const gpio = @import("gpio.zig");
 const pins = @import("pins.zig");
 const time = @import("time.zig");
 const Serial = @import("Serial.zig");
+const LiquidCrystal = @import("LiquidCrystal.zig").LiquidCrystal;
 
 const std = @import("std");
 
 pub fn main() !void {
-    try Serial.begin(115200);
-    try Serial.write("Hi there");
-    const read = try Serial.readString();
-    var buf = [_]u8{0} ** 10;
-    _ = std.fmt.formatIntBuf(&buf, @intCast(u32, read[0]), 10, .upper, .{});
-    try Serial.write(&buf);
-
     time.init();
+    const lcd = LiquidCrystal(7, 8, 9, 10, 11, 12);
+    lcd.begin(16, 2);
+    //lcd.print("a");
     // Onboard LED
-    gpio.pinMode(10, .out);
+    gpio.pinMode(13, .out);
     while (true) {
-        gpio.analogWrite(10, 100);
+        gpio.digitalWrite(13, .high);
+        lcd.print("aaaaa");
         time.delay(1000);
-        gpio.analogWrite(10, 200);
+        gpio.digitalWrite(13, .low);
+        lcd.clear();
         time.delay(1000);
     }
 }
