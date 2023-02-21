@@ -1,5 +1,7 @@
 const micro = @import("microzig");
 
+const std = @import("std");
+
 const SerialError = error{SerialNotBegun};
 
 // The UART object provided by microzig. This could be returned but trying
@@ -34,6 +36,19 @@ pub fn write(bytes: []const u8) !void {
     const uart_instance = try uart.get();
     const writer = uart_instance.writer();
     try writer.writeAll(bytes);
+}
+
+// All print* functions are the overloaded print functions in Arduino
+pub fn printString(string: []const u8) !void {
+    try write(string);
+}
+
+pub fn printNum(num: u32, base: u8) !void {
+    // Just be safe I guess
+    var buf = [_]u8{0} ** 33;
+    // Neither this nor using the writer directly work too well...
+    _ = std.fmt.formatIntBuf(&buf, num, base, .lower, .{});
+    try write(&buf);
 }
 
 // TODO: This doesn't seem to work. :(
