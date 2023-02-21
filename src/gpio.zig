@@ -57,8 +57,8 @@ pub fn pinMode(comptime pin: u8, comptime dir: enum { in, out }) void {
 }
 
 pub const DigitalVal = enum(u1) {
-    low = 1,
-    high = 0,
+    low = 0,
+    high = 1,
 };
 
 pub fn digitalWrite(comptime pin: u8, val: DigitalVal) void {
