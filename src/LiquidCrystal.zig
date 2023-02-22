@@ -109,19 +109,22 @@ pub fn LiquidCrystal(comptime rs: u8, comptime enable: u8, comptime d0: u8, comp
         const data2_pin = d2;
         const data3_pin = d3;
 
-        var columns: u8 = 16;
         var num_lines: u8 = 1;
+        var row_offsets = [4]u8{ 0, 0, 0, 0 };
 
         var lcd_config = Config.init();
 
-        // TODO dotsize but can't test
         pub fn begin(comptime cols: u8, comptime lines: u8) void {
             if (lines > 1) {
                 lcd_config.lcd_lines = .twoline;
             }
-            columns = cols;
             num_lines = lines;
-            // TODO: Row offsets?
+
+            // Set the row offsets
+            row_offsets[0] = 0x00;
+            row_offsets[1] = 0x40;
+            row_offsets[2] = 0x00 + cols;
+            row_offsets[3] = 0x40 + cols;
 
             gpio.pinMode(rs_pin, .out);
             gpio.pinMode(enable_pin, .out);
@@ -149,6 +152,17 @@ pub fn LiquidCrystal(comptime rs: u8, comptime enable: u8, comptime d0: u8, comp
             command(entry_mode_set | lcd_config.entryBits());
         }
 
+        // Sets the dotsize, separate from .begin because it's not used
+        // as much.
+        pub fn setDotsize(dotsize: enum { dots5x8, dots5x10 }) void {
+            if (dotsize == .dots5x8) {
+                lcd_config.lcd_dots = .dots5x8;
+            } else {
+                lcd_config.lcd_dots = .dots5x10;
+            }
+            display();
+        }
+
         pub fn clear() void {
             command(clear_display);
             time.delay(2);
@@ -157,6 +171,21 @@ pub fn LiquidCrystal(comptime rs: u8, comptime enable: u8, comptime d0: u8, comp
         pub fn home() void {
             command(return_home);
             time.delay(2);
+        }
+
+        pub fn setCursor(col: u8, row: u8) void {
+            var adjusted_row = row;
+            if (row >= num_lines) {
+                // If we try to set it beyond number of rows,
+                // just bring it back down to the last row.
+                // It's 0 indexed.
+                adjusted_row = num_lines - 1;
+            }
+            if (adjusted_row >= row_offsets.len) {
+                // Don't go over the array bound.
+                adjusted_row = row_offsets.len - 1;
+            }
+            command(set_dram_addr | (col + row_offsets[adjusted_row]));
         }
 
         pub fn noDisplay() void {
