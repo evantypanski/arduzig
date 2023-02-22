@@ -225,6 +225,10 @@ pub fn LiquidCrystal(comptime rs: u8, comptime enable: u8, comptime d0: u8, comp
 
         pub fn print(str: []const u8) void {
             for (str) |value| {
+                // Go until we see a null character, or to the end of the array.
+                if (value == 0) {
+                    return;
+                }
                 write(value);
             }
         }
