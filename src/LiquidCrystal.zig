@@ -76,6 +76,7 @@ const Config = struct {
     }
 };
 
+// Commands
 const clear_display = 0x01;
 const return_home = 0x02;
 const entry_mode_set = 0x04;
@@ -84,6 +85,12 @@ const cursor_shift = 0x10;
 const function_set = 0x20;
 const set_cgram_addr = 0x40;
 const set_dram_addr = 0x80;
+
+// For display/cursor shift
+const display_move = 0x08;
+const cursor_move = 0x00;
+const move_right = 0x04;
+const move_left = 0x00;
 
 // For now only 4 bit mode
 pub fn LiquidCrystal(comptime rs: u8, comptime enable: u8, comptime d0: u8, comptime d1: u8, comptime d2: u8, comptime d3: u8) type {
@@ -147,9 +154,73 @@ pub fn LiquidCrystal(comptime rs: u8, comptime enable: u8, comptime d0: u8, comp
             time.delay(2);
         }
 
+        pub fn home() void {
+            command(return_home);
+            time.delay(2);
+        }
+
+        pub fn noDisplay() void {
+            lcd_config.display = .off;
+            command(display_control | lcd_config.displayBits());
+        }
+
         pub fn display() void {
             lcd_config.display = .on;
             command(display_control | lcd_config.displayBits());
+        }
+
+        pub fn noCursor() void {
+            lcd_config.cursor = .off;
+            command(display_control | lcd_config.displayBits());
+        }
+
+        pub fn cursor() void {
+            lcd_config.cursor = .on;
+            command(display_control | lcd_config.displayBits());
+        }
+
+        pub fn noBlink() void {
+            lcd_config.blink = .off;
+            command(display_control | lcd_config.displayBits());
+        }
+
+        pub fn blink() void {
+            lcd_config.blink = .on;
+            command(display_control | lcd_config.displayBits());
+        }
+
+        // Scroll the text on the display one spot to the left
+        pub fn scrollDisplayLeft() void {
+            command(cursor_shift | display_move | move_left);
+        }
+
+        // Scroll the text on the display one spot to the right
+        pub fn scrollDisplayRight() void {
+            command(cursor_shift | display_move | move_right);
+        }
+
+        // Make text flow left -> right
+        pub fn leftToRight() void {
+            lcd_config.entry = .left;
+            command(entry_mode_set | lcd_config.entryBits());
+        }
+
+        // Make text flow right -> left
+        pub fn rightToLeft() void {
+            lcd_config.entry = .right;
+            command(entry_mode_set | lcd_config.entryBits());
+        }
+
+        // Right justify
+        pub fn autoscroll() void {
+            lcd_config.entry_shift = .increment;
+            command(entry_mode_set | lcd_config.entryBits());
+        }
+
+        // Left justify
+        pub fn noAutoscroll() void {
+            lcd_config.entry_shift = .decrement;
+            command(entry_mode_set | lcd_config.entryBits());
         }
 
         pub fn print(str: []const u8) void {
