@@ -143,7 +143,7 @@ pub fn LiquidCrystal(comptime rs: u8, comptime enable: u8, comptime d0: u8, comp
             write4bits(0x03);
             time.delay(5);
             write4bits(0x03);
-            time.delay(1);
+            time.delayMicroseconds(150);
             write4bits(0x02);
 
             command(function_set | lcd_config.functionBits());
@@ -292,10 +292,10 @@ pub fn LiquidCrystal(comptime rs: u8, comptime enable: u8, comptime d0: u8, comp
         fn pulseEnable() void {
             gpio.digitalWrite(enable_pin, .low);
             // TODO: This should be 1 us.. but we're slow here.
-            time.delay(1);
+            time.delayMicroseconds(1);
             gpio.digitalWrite(enable_pin, .high);
             // Enable just needs to be high for >450 ns so we good.
-            time.delay(1);
+            time.delayMicroseconds(1);
             gpio.digitalWrite(enable_pin, .low);
             // This'll be 100us not 1us like others to settle
             time.delay(1);

@@ -72,3 +72,33 @@ pub fn delay(ms: u64) void {
         }
     }
 }
+
+// u32 not u64 to easily get signed version so we can have more efficient
+// loop later. This is really trial and error and should be done better when
+// I am able.
+pub fn delayMicroseconds(us: u32) void {
+    // TODO: Care about clock frequency
+    // We'll assume <= 1us overhead of function call is enough
+    if (us <= 1) return;
+
+    // This is signed so later we can subtract an amount larger than 1
+    // and check if it's greater than 0 without underflow.
+    var us_var: i64 = us;
+
+    // Trying to get the loop later exactly right... and this x4 to get
+    // us to actually be us and not ms, but this was trial and error anyway
+    us_var <<= 2;
+    // Subtract an amount of time. Arduino libraries have 5 so I'll do that,
+    // but I think copying the variable will add a load in there. But then
+    // we aren't doing the shift first at the moment so it may even out.
+    us_var -= 5;
+
+    // After messing around with inline ASM for forever, I think Zig/LLVM
+    // don't fully work with AVR inline assembly constraints like =w - or
+    // probably any 32 bit or 64 bit types. Instead, just try out a busy
+    // wait with a loop.
+    while (us_var > 0) {
+        us_var -= 9;
+        asm volatile ("nop");
+    }
+}
